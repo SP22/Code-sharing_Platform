@@ -1,50 +1,43 @@
 package platform.controllers;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import platform.model.CodePiece;
-import platform.utils.HtmlFormatter;
+import platform.repository.CodeRepository;
+import platform.utils.DateUtils;
 
-@RestController
+@Controller
+@RequestMapping(path = "/code",
+        produces = MediaType.TEXT_HTML_VALUE)
 public class WebController {
     @Autowired
-    private HtmlFormatter htmlFormatter;
+    private DateUtils dateUtils;
+    @Autowired
+    private CodeRepository codeRepository;
 
-    private CodePiece code;
-
-    @PostConstruct
-    public void init() {
-         this.code = new CodePiece(
-                "{\n\"code\": \"public static void main(String[] args) {\\n    SpringApplication.run(CodeSharingPlatform.class, args);\\n}\"\n}",
-                "Code",
-                htmlFormatter.getCurrentDate()
-        );
-    }
-    @GetMapping(value = "/code", produces = "text/html")
-    public String getCode() {
-        return htmlFormatter.getHtmlCode(code);
+    @GetMapping(value = "/{id}")
+    public String getCode(
+            @PathVariable("id") int id,
+            Model model
+    ) {
+        CodePiece codePiece = codeRepository.getByIndex(id);
+        model.addAttribute("code", codePiece);
+        return "codepiece";
     }
 
-    @GetMapping(value = "/api/code", produces = "application/json;charset=UTF-8")
-    public CodePiece getApiCode() {
-        return code;
+    @GetMapping(value = "/new")
+    public String getCodeNew(Model model) {
+        return "newcodepiece";
     }
 
-    @GetMapping(value = "/code/new", produces = "text/html")
-    public ResponseEntity<String> getCodeNew() {
-        return ResponseEntity.ok(htmlFormatter.getHtmlCodeNew());
-    }
-
-    @PostMapping(value = "/api/code/new", produces = "application/json;charset=UTF-8")
-    public String setCode(@RequestBody CodePiece newCode) {
-        code.setCode(newCode.getCode());
-        code.setDate(htmlFormatter.getCurrentDate());
-        return "{}";
+    @GetMapping(value = "/latest")
+    public String getLatest(Model model) {
+        model.addAttribute("latest", codeRepository.getLatest());
+        return "latestcodepieces";
     }
 }

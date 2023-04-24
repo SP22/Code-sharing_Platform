@@ -1,0 +1,6 @@
+# Project exclude paths
+/.gradle/
+/Code-sharing Platform/task/build/
+/Topics/Instant/The Instant to a long/out/
+/Topics/Instant/The Instant to a long/out/production/classes/
+/.idea
