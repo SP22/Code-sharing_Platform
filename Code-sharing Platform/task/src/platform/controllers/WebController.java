@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import platform.model.CodePiece;
-import platform.repository.CodeRepository;
+import platform.service.CodeService;
 import platform.utils.DateUtils;
 
 @Controller
@@ -18,14 +18,14 @@ public class WebController {
     @Autowired
     private DateUtils dateUtils;
     @Autowired
-    private CodeRepository codeRepository;
+    private CodeService codeService;
 
     @GetMapping(value = "/{id}")
     public String getCode(
             @PathVariable("id") int id,
             Model model
     ) {
-        CodePiece codePiece = codeRepository.getByIndex(id);
+        CodePiece codePiece = codeService.getById(id);
         model.addAttribute("code", codePiece);
         return "codepiece";
     }
@@ -37,7 +37,7 @@ public class WebController {
 
     @GetMapping(value = "/latest")
     public String getLatest(Model model) {
-        model.addAttribute("latest", codeRepository.getLatest());
+        model.addAttribute("latest", codeService.getLatest());
         return "latestcodepieces";
     }
 }

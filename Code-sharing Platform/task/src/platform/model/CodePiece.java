@@ -1,13 +1,30 @@
 package platform.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "code_piece")
 public class CodePiece {
+
+    @Id
+    @JsonIgnore
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false)
+    private long id;
+
+    @Column(name = "code")
     private String code;
     private String date;
     @JsonIgnore
     private String title;
 
+    public CodePiece() {}
     public CodePiece(String code, String title, String date) {
         this.code = code;
         this.title = title;
@@ -36,6 +53,14 @@ public class CodePiece {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
 }

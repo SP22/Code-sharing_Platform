@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import platform.model.CodePiece;
-import platform.repository.CodeRepository;
+import platform.service.CodeService;
 import platform.utils.DateUtils;
 
 @RestController
@@ -18,7 +18,7 @@ import platform.utils.DateUtils;
 public class ApiController {
 
     @Autowired
-    CodeRepository codeRepository;
+    CodeService codeService;
     @Autowired
     DateUtils dateUtils;
 
@@ -26,18 +26,18 @@ public class ApiController {
     public CodePiece getCode(
             @PathVariable("id") int id
     ) {
-        return codeRepository.getByIndex(id);
+        return codeService.getById(id);
     }
 
     @GetMapping(value = "/latest")
     public Object[] getLatest() {
-        return codeRepository.getLatest();
+        return codeService.getLatest();
     }
 
     @PostMapping(value = "/new")
     public String setCode(@RequestBody CodePiece newCode) {
         CodePiece code = new CodePiece(newCode.getCode(), "Code", dateUtils.getCurrentDate());
-        int id = codeRepository.add(code);
+        long id = codeService.save(code);
         return "{ \"id\" : \"" + id + "\" }";
     }
 }
