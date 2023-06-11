@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import platform.model.CodePiece;
+import platform.model.dto.CodeDto;
 import platform.service.CodeService;
 import platform.utils.DateUtils;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "/api/code",
@@ -19,25 +23,22 @@ public class ApiController {
 
     @Autowired
     CodeService codeService;
-    @Autowired
-    DateUtils dateUtils;
 
-    @GetMapping(value = "/{id}")
-    public CodePiece getCode(
-            @PathVariable("id") int id
+    @GetMapping(value = "/{uuid}")
+    public CodeDto getCode(
+            @PathVariable String uuid
     ) {
-        return codeService.getById(id);
+        return codeService.getByUuid(uuid);
     }
 
     @GetMapping(value = "/latest")
-    public Object[] getLatest() {
+    public List<CodeDto> getLatest() {
         return codeService.getLatest();
     }
 
     @PostMapping(value = "/new")
-    public String setCode(@RequestBody CodePiece newCode) {
-        CodePiece code = new CodePiece(newCode.getCode(), "Code", dateUtils.getCurrentDate());
-        long id = codeService.save(code);
-        return "{ \"id\" : \"" + id + "\" }";
+    public String setCode(@RequestBody CodeDto newCode) {
+        UUID uuid = codeService.save(newCode);
+        return "{ \"id\" : \"" + uuid + "\" }";
     }
 }

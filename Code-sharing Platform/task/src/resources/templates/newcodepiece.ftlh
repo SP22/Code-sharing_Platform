@@ -11,12 +11,22 @@
     </head>
     <body>
         <textarea id="code_snippet">// write your code here</textarea>
+        <div>
+            <label>Time restriction:</label>
+            <input id="time_restriction" type="text" value="0"/>
+        </div>
+        <div>
+            <label>Views restriction:</label>
+            <input id="views_restriction" type="text" value="0"/>
+        </div>
         <button id="send_snippet" type="submit" onclick="send()">Submit</button>
 
         <script type="text/javascript">
             function send() {
                 let object = {
-                    "code": document.getElementById("code_snippet").value
+                    "code": document.getElementById("code_snippet").value,
+                    "views": document.getElementById("views_restriction").value,
+                    "time": document.getElementById("time_restriction").value
                 };
 
                 let json = JSON.stringify(object);
@@ -31,5 +41,6 @@
                 }
             }
         </script>
+
     </body>
 </html>

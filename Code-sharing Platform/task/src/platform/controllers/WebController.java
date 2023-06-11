@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import platform.model.CodePiece;
+import platform.model.dto.CodeDto;
 import platform.service.CodeService;
 import platform.utils.DateUtils;
+
+import java.util.UUID;
 
 @Controller
 @RequestMapping(path = "/code",
@@ -20,12 +23,12 @@ public class WebController {
     @Autowired
     private CodeService codeService;
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{uuid}")
     public String getCode(
-            @PathVariable("id") int id,
+            @PathVariable String uuid,
             Model model
     ) {
-        CodePiece codePiece = codeService.getById(id);
+        CodeDto codePiece = codeService.getByUuid(uuid);
         model.addAttribute("code", codePiece);
         return "codepiece";
     }

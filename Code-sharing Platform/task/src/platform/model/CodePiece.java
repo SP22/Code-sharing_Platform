@@ -1,34 +1,54 @@
 package platform.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Entity
 @Table(name = "code_piece")
 public class CodePiece {
+    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Id
-    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
     private long id;
 
-    @Column(name = "code")
-    private String code;
-    private String date;
-    @JsonIgnore
-    private String title;
+    private final UUID uuid;
 
-    public CodePiece() {}
-    public CodePiece(String code, String title, String date) {
+    @Column(name = "code", columnDefinition = "VARCHAR(2000)")
+    private String code;
+    private LocalDateTime createdAt;
+    private LocalDateTime availableUntil;
+    private int views;
+    private boolean timeRestricted;
+    private boolean viewRestricted;
+    private boolean restricted;
+
+    public CodePiece() {
+        this.uuid = UUID.randomUUID();
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public CodePiece(String code, LocalDateTime createdAt, LocalDateTime availableUntil, int views) {
+        this();
         this.code = code;
-        this.title = title;
-        this.date = date;
+        this.createdAt = createdAt;
+        this.availableUntil = availableUntil;
+        this.views = views;
+        this.timeRestricted = availableUntil.isAfter(createdAt);
+        this.viewRestricted = views > 0;
+        if (this.timeRestricted || this.viewRestricted) {
+            this.restricted = true;
+        }
     }
 
     public String getCode() {
@@ -39,28 +59,39 @@ public class CodePiece {
         this.code = code;
     }
 
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public long getId() {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public UUID getUuid() {
+        return uuid;
     }
 
+    public LocalDateTime getAvailableUntil() {
+        return availableUntil;
+    }
+
+    public int getViews() {
+        return views;
+    }
+
+    public void setViews(int views) {
+        this.views = views;
+    }
+
+    public boolean isTimeRestricted() {
+        return timeRestricted;
+    }
+
+    public boolean isViewRestricted() {
+        return viewRestricted;
+    }
+
+    public boolean isRestricted() {
+        return restricted;
+    }
 }
